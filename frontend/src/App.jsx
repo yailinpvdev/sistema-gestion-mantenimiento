@@ -1,121 +1,178 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [activeSection, setActiveSection] = useState('dashboard')
+
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: '▦' },
+    { id: 'equipment', label: 'Equipos', icon: '⚙' },
+    { id: 'maintenance', label: 'Mantenimientos', icon: '🔧' },
+    { id: 'requests', label: 'Solicitudes', icon: '📋' },
+    { id: 'technicians', label: 'Técnicos', icon: '👤' },
+  ]
+
+  const stats = [
+    {
+      title: 'Equipos registrados',
+      value: '0',
+      description: 'Total de equipos',
+    },
+    {
+      title: 'Mantenimientos pendientes',
+      value: '0',
+      description: 'Requieren atención',
+    },
+    {
+      title: 'Solicitudes abiertas',
+      value: '0',
+      description: 'Pendientes de gestión',
+    },
+    {
+      title: 'Técnicos activos',
+      value: '0',
+      description: 'Personal registrado',
+    },
+  ]
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app">
+      <aside className="sidebar">
+        <div className="logo">
+          <div className="logo-icon">M</div>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          <div>
+            <h1>ManteniPro</h1>
+            <span>Gestión de mantenimiento</span>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        <nav className="navigation">
+          <p className="menu-title">MENÚ PRINCIPAL</p>
+
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              className={`nav-item ${
+                activeSection === item.id ? 'active' : ''
+              }`}
+              onClick={() => setActiveSection(item.id)}
+            >
+              <span className="nav-icon">{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <p>Sistema de Gestión</p>
+          <span>Versión 1.0.0</span>
+        </div>
+      </aside>
+
+      <main className="main-content">
+        <header className="topbar">
+          <div>
+            <p className="breadcrumb">Inicio / Dashboard</p>
+            <h2>Dashboard</h2>
+          </div>
+
+          <div className="user-info">
+            <div className="user-avatar">Y</div>
+
+            <div>
+              <strong>Administrador</strong>
+              <span>Usuario del sistema</span>
+            </div>
+          </div>
+        </header>
+
+        <section className="content">
+          <div className="welcome">
+            <div>
+              <p className="eyebrow">SISTEMA DE MANTENIMIENTO</p>
+
+              <h3>
+                Bienvenido al sistema de gestión
+              </h3>
+
+              <p>
+                Administra equipos, mantenimientos, solicitudes y personal
+                desde un solo lugar.
+              </p>
+            </div>
+
+            <button className="primary-button">
+              + Nueva solicitud
+            </button>
+          </div>
+
+          <section className="stats-grid">
+            {stats.map((stat) => (
+              <article className="stat-card" key={stat.title}>
+                <div className="stat-header">
+                  <span>{stat.title}</span>
+                  <div className="stat-icon">◈</div>
+                </div>
+
+                <strong>{stat.value}</strong>
+
+                <p>{stat.description}</p>
+              </article>
+            ))}
+          </section>
+
+          <section className="dashboard-grid">
+            <article className="panel">
+              <div className="panel-header">
+                <div>
+                  <h3>Próximos mantenimientos</h3>
+                  <p>Programación de actividades</p>
+                </div>
+
+                <button className="text-button">
+                  Ver todos
+                </button>
+              </div>
+
+              <div className="empty-state">
+                <div className="empty-icon">🔧</div>
+
+                <h4>No hay mantenimientos programados</h4>
+
+                <p>
+                  Cuando registres actividades de mantenimiento,
+                  aparecerán aquí.
+                </p>
+              </div>
+            </article>
+
+            <article className="panel">
+              <div className="panel-header">
+                <div>
+                  <h3>Solicitudes recientes</h3>
+                  <p>Últimas solicitudes registradas</p>
+                </div>
+
+                <button className="text-button">
+                  Ver todas
+                </button>
+              </div>
+
+              <div className="empty-state">
+                <div className="empty-icon">📋</div>
+
+                <h4>No hay solicitudes registradas</h4>
+
+                <p>
+                  Las nuevas solicitudes aparecerán en este espacio.
+                </p>
+              </div>
+            </article>
+          </section>
+        </section>
+      </main>
+    </div>
   )
 }
 
