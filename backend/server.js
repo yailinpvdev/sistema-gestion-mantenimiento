@@ -8,8 +8,11 @@ const PORT = 3000;
 app.use(express.json());
 
 const testRoutes = require("./routes/test.routes");
+const usuariosRoutes = require("./routes/usuarios.routes");
 
 app.use("/api/test", testRoutes);
+app.use("/api/usuarios", usuariosRoutes);
+
 app.get("/", (req, res) => {
   res.json({
     mensaje: "API del Sistema de Gestión de Mantenimiento funcionando",
