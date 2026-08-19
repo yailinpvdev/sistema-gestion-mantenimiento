@@ -65,4 +65,35 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, correo, rol, activo } = req.body;
+
+    const resultado = await pool.query(
+      `UPDATE usuarios
+       SET nombre = $1,
+           correo = $2,
+           rol = $3,
+           activo = $4
+       WHERE id = $5
+       RETURNING id, nombre, correo, rol, activo, created_at`,
+      [nombre, correo, rol, activo, id],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensaje: "Usuario no encontrado",
+      });
+    }
+
+    res.json(resultado.rows[0]);
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error.message);
+    res.status(500).json({
+      mensaje: "Error al actualizar usuario",
+    });
+  }
+});
+
 module.exports = router;
