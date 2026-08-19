@@ -1,4 +1,5 @@
 const express = require("express");
+const pool = require("./db");
 
 const app = express();
 
@@ -16,5 +17,10 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
+  pool
+    .query("SELECT NOW()")
+    .then(() => console.log("PostgreSQL conectado"))
+    .catch((err) => console.error("Error PostgreSQL:", err.message));
+
   console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
