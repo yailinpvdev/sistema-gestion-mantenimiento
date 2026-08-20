@@ -9,9 +9,11 @@ app.use(express.json());
 
 const testRoutes = require("./routes/test.routes");
 const usuariosRoutes = require("./routes/usuarios.routes");
+const solicitudesRoutes = require("./routes/solicitudes.routes");
 
 app.use("/api/test", testRoutes);
 app.use("/api/usuarios", usuariosRoutes);
+app.use("/api/solicitudes", solicitudesRoutes);
 
 app.get("/", (req, res) => {
   res.json({
