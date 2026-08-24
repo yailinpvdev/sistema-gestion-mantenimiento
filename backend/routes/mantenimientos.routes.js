@@ -103,4 +103,33 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const resultado = await pool.query(
+      `DELETE FROM mantenimientos
+       WHERE id = $1
+       RETURNING id`,
+      [id],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensaje: "Mantenimiento no encontrado",
+      });
+    }
+
+    res.json({
+      mensaje: "Mantenimiento eliminado correctamente",
+      id: resultado.rows[0].id,
+    });
+  } catch (error) {
+    console.error("Error al eliminar mantenimiento:", error.message);
+    res.status(500).json({
+      mensaje: "Error al eliminar mantenimiento",
+    });
+  }
+});
+
 module.exports = router;
