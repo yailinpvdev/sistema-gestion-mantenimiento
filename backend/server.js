@@ -12,12 +12,14 @@ const usuariosRoutes = require("./routes/usuarios.routes");
 const solicitudesRoutes = require("./routes/solicitudes.routes");
 const equiposRoutes = require("./routes/equipos.routes");
 const mantenimientosRoutes = require("./routes/mantenimientos.routes");
+const repuestosRoutes = require("./routes/repuestos.routes");
 
 app.use("/api/test", testRoutes);
 app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/solicitudes", solicitudesRoutes);
 app.use("/api/equipos", equiposRoutes);
 app.use("/api/mantenimientos", mantenimientosRoutes);
+app.use("/api/repuestos", repuestosRoutes);
 
 app.get("/", (req, res) => {
   res.json({
