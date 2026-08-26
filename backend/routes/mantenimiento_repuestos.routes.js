@@ -134,4 +134,38 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// Eliminar un repuesto utilizado en un mantenimiento
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const resultado = await pool.query(
+      `DELETE FROM mantenimiento_repuestos
+       WHERE id = $1
+       RETURNING id, mantenimiento_id, repuesto_id, cantidad`,
+      [id],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensaje: "Registro de mantenimiento-repuesto no encontrado",
+      });
+    }
+
+    res.json({
+      mensaje: "Repuesto eliminado correctamente del mantenimiento",
+      registro: resultado.rows[0],
+    });
+  } catch (error) {
+    console.error(
+      "Error al eliminar repuesto del mantenimiento:",
+      error.message,
+    );
+
+    res.status(500).json({
+      mensaje: "Error al eliminar repuesto del mantenimiento",
+    });
+  }
+});
+
 module.exports = router;
