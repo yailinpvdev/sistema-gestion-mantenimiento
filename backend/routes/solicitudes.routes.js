@@ -3,6 +3,7 @@ const pool = require("../db");
 
 const router = express.Router();
 
+// Obtener todas las solicitudes
 router.get("/", async (req, res) => {
   try {
     const resultado = await pool.query(
@@ -21,6 +22,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Obtener una solicitud por ID
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -48,32 +50,56 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Crear una solicitud
 router.post("/", async (req, res) => {
   try {
-    const { equipo_id, usuario_id, titulo, descripcion, prioridad, estado } =
-      req.body;
+    const { equipo_id, titulo, descripcion, prioridad, estado } = req.body;
+
+    // Validar que se haya seleccionado un equipo
+    if (!equipo_id) {
+      return res.status(400).json({
+        mensaje: "Debes seleccionar un equipo",
+      });
+    }
+
+    // Validar que exista una descripción
+    if (!descripcion || !descripcion.trim()) {
+      return res.status(400).json({
+        mensaje: "Debes ingresar una descripción",
+      });
+    }
 
     const resultado = await pool.query(
       `INSERT INTO solicitudes
-       (equipo_id, usuario_id, titulo, descripcion, prioridad, estado)
-       VALUES ($1, $2, $3, $4, $5, $6)
+       (equipo_id, titulo, descripcion, prioridad, estado)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING id, equipo_id, usuario_id, titulo, descripcion,
                  prioridad, estado, fecha_solicitud, fecha_cierre`,
-      [equipo_id, usuario_id, titulo, descripcion, prioridad, estado],
+      [
+        equipo_id,
+        titulo || "Solicitud de mantenimiento",
+        descripcion.trim(),
+        prioridad || "media",
+        estado || "abierta",
+      ],
     );
 
     res.status(201).json(resultado.rows[0]);
   } catch (error) {
     console.error("Error al crear solicitud:", error.message);
+
     res.status(500).json({
       mensaje: "Error al crear solicitud",
+      error: error.message,
     });
   }
 });
 
+// Actualizar una solicitud
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
+
     const { equipo_id, usuario_id, titulo, descripcion, prioridad, estado } =
       req.body;
 
@@ -100,12 +126,14 @@ router.put("/:id", async (req, res) => {
     res.json(resultado.rows[0]);
   } catch (error) {
     console.error("Error al actualizar solicitud:", error.message);
+
     res.status(500).json({
       mensaje: "Error al actualizar solicitud",
     });
   }
 });
 
+// Cancelar una solicitud
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -131,6 +159,7 @@ router.delete("/:id", async (req, res) => {
     });
   } catch (error) {
     console.error("Error al cancelar solicitud:", error.message);
+
     res.status(500).json({
       mensaje: "Error al cancelar solicitud",
     });
