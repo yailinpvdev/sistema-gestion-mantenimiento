@@ -11,6 +11,7 @@ function App() {
   // =========================
 
   const [equipos, setEquipos] = useState([])
+
   const [mostrarFormularioEquipo, setMostrarFormularioEquipo] =
     useState(false)
 
@@ -31,6 +32,7 @@ function App() {
   // =========================
 
   const [solicitudes, setSolicitudes] = useState([])
+
   const [mostrarFormularioSolicitud, setMostrarFormularioSolicitud] =
     useState(false)
 
@@ -45,7 +47,7 @@ function App() {
   const [guardandoSolicitud, setGuardandoSolicitud] = useState(false)
 
   // =========================
-  // CARGAR EQUIPOS
+  // OBTENER EQUIPOS
   // =========================
 
   const obtenerEquipos = async () => {
@@ -65,7 +67,7 @@ function App() {
   }
 
   // =========================
-  // CARGAR SOLICITUDES
+  // OBTENER SOLICITUDES
   // =========================
 
   const obtenerSolicitudes = async () => {
@@ -87,10 +89,54 @@ function App() {
   // =========================
   // CARGAR DATOS AL INICIAR
   // =========================
+  // Se hace mediante callbacks asíncronos
+  // para evitar el error de setState dentro
+  // del cuerpo directo del useEffect.
 
   useEffect(() => {
-    obtenerEquipos()
-    obtenerSolicitudes()
+    let componenteActivo = true
+
+    const cargarDatosIniciales = async () => {
+      try {
+        const [respuestaEquipos, respuestaSolicitudes] =
+          await Promise.all([
+            fetch(`${API_URL}/equipos`),
+            fetch(`${API_URL}/solicitudes`),
+          ])
+
+        if (!respuestaEquipos.ok) {
+          throw new Error('No se pudieron obtener los equipos')
+        }
+
+        if (!respuestaSolicitudes.ok) {
+          throw new Error(
+            'No se pudieron obtener las solicitudes',
+          )
+        }
+
+        const [datosEquipos, datosSolicitudes] =
+          await Promise.all([
+            respuestaEquipos.json(),
+            respuestaSolicitudes.json(),
+          ])
+
+        if (componenteActivo) {
+          setEquipos(datosEquipos)
+          setSolicitudes(datosSolicitudes)
+        }
+      } catch (error) {
+        console.error(
+          'Error al cargar los datos iniciales:',
+          error,
+        )
+      }
+    }
+
+    cargarDatosIniciales()
+
+    return () => {
+      componenteActivo = false
+    }
   }, [])
 
   // =========================
@@ -125,6 +171,10 @@ function App() {
       [name]: value,
     }))
   }
+
+  // =========================
+  // CREAR EQUIPO
+  // =========================
 
   const crearEquipo = async (evento) => {
     evento.preventDefault()
@@ -169,7 +219,8 @@ function App() {
       console.error('Error al crear equipo:', error)
 
       alert(
-        error.message || 'Ocurrió un error al registrar el equipo.',
+        error.message ||
+          'Ocurrió un error al registrar el equipo.',
       )
     } finally {
       setGuardandoEquipo(false)
@@ -206,6 +257,10 @@ function App() {
       [name]: value,
     }))
   }
+
+  // =========================
+  // CREAR SOLICITUD
+  // =========================
 
   const crearSolicitud = async (evento) => {
     evento.preventDefault()
@@ -282,6 +337,10 @@ function App() {
     setMostrarFormularioSolicitud(false)
   }
 
+  // =========================
+  // MENÚ
+  // =========================
+
   const menuItems = [
     {
       id: 'dashboard',
@@ -313,10 +372,6 @@ function App() {
   // =========================
   // ESTADÍSTICAS
   // =========================
-
-  const equiposActivos = equipos.filter(
-    (equipo) => equipo.estado === 'activo',
-  ).length
 
   const solicitudesPendientes = solicitudes.filter(
     (solicitud) =>
@@ -495,6 +550,7 @@ function App() {
         {equipos.length === 0 && (
           <div className="info-message">
             <strong>Primero registra un equipo.</strong>
+
             <span>
               Necesitas al menos un equipo registrado para
               crear una solicitud de mantenimiento.
@@ -553,7 +609,8 @@ function App() {
                   {solicitudes.map((solicitud) => {
                     const equipo = equipos.find(
                       (item) =>
-                        item.id === solicitud.equipo_id,
+                        Number(item.id) ===
+                        Number(solicitud.equipo_id),
                     )
 
                     return (
@@ -1120,8 +1177,12 @@ function App() {
                   <select
                     id="equipo_id"
                     name="equipo_id"
-                    value={formularioSolicitud.equipo_id}
-                    onChange={manejarCambioSolicitud}
+                    value={
+                      formularioSolicitud.equipo_id
+                    }
+                    onChange={
+                      manejarCambioSolicitud
+                    }
                     required
                   >
                     <option value="">
@@ -1149,8 +1210,12 @@ function App() {
                     id="titulo"
                     name="titulo"
                     type="text"
-                    value={formularioSolicitud.titulo}
-                    onChange={manejarCambioSolicitud}
+                    value={
+                      formularioSolicitud.titulo
+                    }
+                    onChange={
+                      manejarCambioSolicitud
+                    }
                     placeholder="Ej. Equipo no enciende"
                     required
                   />
@@ -1167,7 +1232,9 @@ function App() {
                     value={
                       formularioSolicitud.prioridad
                     }
-                    onChange={manejarCambioSolicitud}
+                    onChange={
+                      manejarCambioSolicitud
+                    }
                   >
                     <option value="baja">
                       Baja
@@ -1198,7 +1265,9 @@ function App() {
                     value={
                       formularioSolicitud.estado
                     }
-                    onChange={manejarCambioSolicitud}
+                    onChange={
+                      manejarCambioSolicitud
+                    }
                   >
                     <option value="pendiente">
                       Pendiente
@@ -1221,7 +1290,9 @@ function App() {
                     value={
                       formularioSolicitud.descripcion
                     }
-                    onChange={manejarCambioSolicitud}
+                    onChange={
+                      manejarCambioSolicitud
+                    }
                     placeholder="Describe el problema o mantenimiento que necesita el equipo..."
                     rows="5"
                     required
