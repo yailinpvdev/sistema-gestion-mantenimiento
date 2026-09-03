@@ -219,18 +219,15 @@ app.post("/api/solicitudes", async (req, res) => {
 app.get("/api/mantenimientos", async (req, res) => {
   try {
     const resultado = await pool.query(`
-      SELECT
+    SELECT
         m.*,
         e.nombre AS equipo_nombre,
-        e.tipo AS equipo_tipo,
-        s.titulo AS solicitud_titulo
-      FROM mantenimientos m
-      INNER JOIN equipos e
+        e.tipo AS equipo_tipo
+    FROM mantenimientos m
+    INNER JOIN equipos e
         ON m.equipo_id = e.id
-      LEFT JOIN solicitudes s
-        ON m.solicitud_id = s.id
-      ORDER BY m.id DESC
-    `);
+    ORDER BY m.id DESC
+`);
 
     res.json(resultado.rows);
   } catch (error) {
