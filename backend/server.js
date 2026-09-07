@@ -219,15 +219,15 @@ app.post("/api/solicitudes", async (req, res) => {
 app.get("/api/mantenimientos", async (req, res) => {
   try {
     const resultado = await pool.query(`
-    SELECT
+      SELECT
         m.*,
         e.nombre AS equipo_nombre,
         e.tipo AS equipo_tipo
-    FROM mantenimientos m
-    INNER JOIN equipos e
+      FROM mantenimientos m
+      INNER JOIN equipos e
         ON m.equipo_id = e.id
-    ORDER BY m.id DESC
-`);
+      ORDER BY m.id DESC
+    `);
 
     res.json(resultado.rows);
   } catch (error) {
@@ -250,13 +250,10 @@ app.get("/api/mantenimientos/:id", async (req, res) => {
       SELECT
         m.*,
         e.nombre AS equipo_nombre,
-        e.tipo AS equipo_tipo,
-        s.titulo AS solicitud_titulo
+        e.tipo AS equipo_tipo
       FROM mantenimientos m
       INNER JOIN equipos e
         ON m.equipo_id = e.id
-      LEFT JOIN solicitudes s
-        ON m.solicitud_id = s.id
       WHERE m.id = $1
       `,
       [Number(id)],
@@ -284,10 +281,10 @@ app.post("/api/mantenimientos", async (req, res) => {
   try {
     const {
       equipo_id,
-      solicitud_id,
+      tecnico_id,
       tipo,
       descripcion,
-      fecha_programada,
+      fecha_mantenimiento,
       estado,
       observaciones,
     } = req.body;
@@ -295,10 +292,10 @@ app.post("/api/mantenimientos", async (req, res) => {
     console.log("POST /api/mantenimientos");
     console.log("Datos recibidos:", req.body);
 
-    if (!equipo_id || !tipo || !fecha_programada) {
+    if (!equipo_id || !tecnico_id || !tipo || !fecha_mantenimiento) {
       return res.status(400).json({
         mensaje:
-          "El equipo, tipo de mantenimiento y fecha programada son obligatorios.",
+          "El equipo, técnico, tipo de mantenimiento y fecha de mantenimiento son obligatorios.",
       });
     }
 
@@ -307,10 +304,10 @@ app.post("/api/mantenimientos", async (req, res) => {
       INSERT INTO mantenimientos
         (
           equipo_id,
-          solicitud_id,
+          tecnico_id,
           tipo,
           descripcion,
-          fecha_programada,
+          fecha_mantenimiento,
           estado,
           observaciones
         )
@@ -319,10 +316,10 @@ app.post("/api/mantenimientos", async (req, res) => {
       `,
       [
         Number(equipo_id),
-        solicitud_id ? Number(solicitud_id) : null,
+        Number(tecnico_id),
         tipo,
         descripcion || null,
-        fecha_programada,
+        fecha_mantenimiento,
         estado || "pendiente",
         observaciones || null,
       ],
@@ -348,10 +345,10 @@ app.put("/api/mantenimientos/:id", async (req, res) => {
 
     const {
       equipo_id,
-      solicitud_id,
+      tecnico_id,
       tipo,
       descripcion,
-      fecha_programada,
+      fecha_mantenimiento,
       estado,
       observaciones,
     } = req.body;
@@ -359,10 +356,10 @@ app.put("/api/mantenimientos/:id", async (req, res) => {
     console.log("PUT /api/mantenimientos/" + id);
     console.log("Datos recibidos:", req.body);
 
-    if (!equipo_id || !tipo || !fecha_programada) {
+    if (!equipo_id || !tecnico_id || !tipo || !fecha_mantenimiento) {
       return res.status(400).json({
         mensaje:
-          "El equipo, tipo de mantenimiento y fecha programada son obligatorios.",
+          "El equipo, técnico, tipo de mantenimiento y fecha de mantenimiento son obligatorios.",
       });
     }
 
@@ -371,10 +368,10 @@ app.put("/api/mantenimientos/:id", async (req, res) => {
       UPDATE mantenimientos
       SET
         equipo_id = $1,
-        solicitud_id = $2,
+        tecnico_id = $2,
         tipo = $3,
         descripcion = $4,
-        fecha_programada = $5,
+        fecha_mantenimiento = $5,
         estado = $6,
         observaciones = $7
       WHERE id = $8
@@ -382,10 +379,10 @@ app.put("/api/mantenimientos/:id", async (req, res) => {
       `,
       [
         Number(equipo_id),
-        solicitud_id ? Number(solicitud_id) : null,
+        Number(tecnico_id),
         tipo,
         descripcion || null,
-        fecha_programada,
+        fecha_mantenimiento,
         estado || "pendiente",
         observaciones || null,
         Number(id),
