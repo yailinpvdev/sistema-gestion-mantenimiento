@@ -64,7 +64,7 @@ function App() {
   });
 
   const [guardandoMantenimiento, setGuardandoMantenimiento] = useState(false);
-
+  const [, setMantenimientoEditando] = useState(null);
   // =========================
   // OBTENER EQUIPOS
   // =========================
@@ -127,7 +127,7 @@ function App() {
 
   // =========================
   // CARGAR DATOS AL INICIAR
-  // =========================
+  // =========================abrirFormularioMantenimiento
   // Se hace mediante callbacks asíncronos
   // para evitar el error de setState dentro
   // del cuerpo directo del useEffect.
@@ -381,6 +381,21 @@ function App() {
     if (!guardandoMantenimiento) {
       setMostrarFormularioMantenimiento(false);
     }
+  };
+
+  const editarMantenimiento = (mantenimiento) => {
+    setMantenimientoEditando(mantenimiento);
+
+    setFormularioMantenimiento({
+      equipo_id: mantenimiento.equipo_id || "",
+      tecnico_id: mantenimiento.tecnico_id || "",
+      tipo: mantenimiento.tipo || "preventivo",
+      fecha_mantenimiento: mantenimiento.fecha_mantenimiento || "",
+      descripcion: mantenimiento.descripcion || "",
+      estado: mantenimiento.estado || "programado",
+    });
+
+    setMostrarFormularioMantenimiento(true);
   };
 
   const manejarCambioMantenimiento = (evento) => {
@@ -871,6 +886,7 @@ function App() {
                     <th>Descripción</th>
                     <th>Fecha</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
 
@@ -914,6 +930,15 @@ function App() {
                           <span className="status-badge status-active">
                             {mantenimiento.estado || "—"}
                           </span>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() => editarMantenimiento(mantenimiento)}
+                          >
+                            Editar
+                          </button>
                         </td>
                       </tr>
                     );
