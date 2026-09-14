@@ -462,7 +462,11 @@ function App() {
         throw new Error(datos.mensaje || "No se pudo crear el mantenimiento.");
       }
 
-      alert("Mantenimiento creado correctamente.");
+      alert(
+        mantenimientoEditando
+          ? "Mantenimiento actualizado correctamente."
+          : "Mantenimiento creado correctamente.",
+      );
 
       setMostrarFormularioMantenimiento(false);
 
