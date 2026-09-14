@@ -21,10 +21,12 @@ function App() {
     modelo: "",
     numero_serie: "",
     estado: "activo",
+
     ubicacion: "",
   });
 
   const [guardandoEquipo, setGuardandoEquipo] = useState(false);
+  const [equipoEditando, setEquipoEditando] = useState(null);
 
   // =========================
   // SOLICITUDES
@@ -207,6 +209,22 @@ function App() {
     }
   };
 
+  const editarEquipo = (equipo) => {
+    setEquipoEditando(equipo);
+
+    setFormularioEquipo({
+      nombre: equipo.nombre || "",
+      tipo: equipo.tipo || "",
+      marca: equipo.marca || "",
+      modelo: equipo.modelo || "",
+      numero_serie: equipo.numero_serie || "",
+      estado: equipo.estado || "activo",
+      ubicacion: equipo.ubicacion || "",
+    });
+
+    setMostrarFormularioEquipo(true);
+  };
+
   const manejarCambioEquipo = (evento) => {
     const { name, value } = evento.target;
 
@@ -236,8 +254,12 @@ function App() {
     try {
       setGuardandoEquipo(true);
 
-      const respuesta = await fetch(`${API_URL}/equipos`, {
-        method: "POST",
+      const url = equipoEditando
+        ? `${API_URL}/equipos/${equipoEditando.id}`
+        : `${API_URL}/equipos`;
+
+      const respuesta = await fetch(url, {
+        method: equipoEditando ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -250,7 +272,11 @@ function App() {
         throw new Error(datos.mensaje || "No se pudo registrar el equipo.");
       }
 
-      alert("Equipo registrado correctamente.");
+      alert(
+        equipoEditando
+          ? "Equipo actualizado correctamente."
+          : "Equipo registrado correctamente.",
+      );
 
       setMostrarFormularioEquipo(false);
 
@@ -305,6 +331,7 @@ function App() {
     evento.preventDefault();
 
     if (!formularioSolicitud.equipo_id) {
+      ``;
       alert("Por favor selecciona un equipo.");
       return;
     }
@@ -631,6 +658,7 @@ function App() {
                     <th>N.º serie</th>
                     <th>Estado</th>
                     <th>Ubicación</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
 
@@ -662,6 +690,15 @@ function App() {
                       </td>
 
                       <td>{equipo.ubicacion || "—"}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          onClick={() => editarEquipo(equipo)}
+                        >
+                          Editar
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

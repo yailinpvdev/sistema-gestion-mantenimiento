@@ -135,6 +135,68 @@ app.post("/api/equipos", async (req, res) => {
   }
 });
 
+// ACTUALIZAR EQUIPO
+app.put("/api/equipos/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { nombre, tipo, marca, modelo, numero_serie, estado, ubicacion } =
+      req.body;
+
+    console.log("PUT /api/equipos/" + id);
+    console.log("Datos recibidos:", req.body);
+
+    if (!nombre || !tipo) {
+      return res.status(400).json({
+        mensaje: "El nombre y el tipo del equipo son obligatorios.",
+      });
+    }
+
+    const resultado = await pool.query(
+      `
+      UPDATE equipos
+      SET
+        nombre = $1,
+        tipo = $2,
+        marca = $3,
+        modelo = $4,
+        numero_serie = $5,
+        estado = $6,
+        ubicacion = $7
+      WHERE id = $8
+      RETURNING *
+      `,
+      [
+        nombre,
+        tipo,
+        marca || null,
+        modelo || null,
+        numero_serie || null,
+        estado || "activo",
+        ubicacion || null,
+        Number(id),
+      ],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensaje: "Equipo no encontrado.",
+      });
+    }
+
+    console.log("Equipo actualizado:", resultado.rows[0]);
+
+    res.json(resultado.rows[0]);
+  } catch (error) {
+    console.error("ERROR PUT /api/equipos/:id:", error);
+
+    res.status(500).json({
+      mensaje: "Error al actualizar el equipo.",
+      error: error.message,
+    });
+  }
+});
+
 // ======================================================
 // SOLICITUDES
 // ======================================================
