@@ -64,7 +64,7 @@ function App() {
   });
 
   const [guardandoMantenimiento, setGuardandoMantenimiento] = useState(false);
-  const [, setMantenimientoEditando] = useState(null);
+  const [mantenimientoEditando, setMantenimientoEditando] = useState(null);
   // =========================
   // OBTENER EQUIPOS
   // =========================
@@ -437,8 +437,12 @@ function App() {
     try {
       setGuardandoMantenimiento(true);
 
-      const respuesta = await fetch(`${API_URL}/mantenimientos`, {
-        method: "POST",
+      const url = mantenimientoEditando
+        ? `${API_URL}/mantenimientos/${mantenimientoEditando.id}`
+        : `${API_URL}/mantenimientos`;
+
+      const respuesta = await fetch(url, {
+        method: mantenimientoEditando ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
