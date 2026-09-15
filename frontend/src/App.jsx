@@ -190,6 +190,8 @@ function App() {
   // =========================
 
   const abrirFormularioEquipo = () => {
+    setEquipoEditando(null);
+
     setFormularioEquipo({
       nombre: "",
       tipo: "",
@@ -223,6 +225,89 @@ function App() {
     });
 
     setMostrarFormularioEquipo(true);
+  };
+
+  const desactivarEquipo = async (equipo) => {
+    const confirmar = window.confirm(
+      `¿Seguro que deseas desactivar el equipo "${equipo.nombre}"?`,
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      const respuesta = await fetch(`${API_URL}/equipos/${equipo.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nombre: equipo.nombre,
+          tipo: equipo.tipo,
+          marca: equipo.marca,
+          modelo: equipo.modelo,
+          numero_serie: equipo.numero_serie,
+          estado: "inactivo",
+          ubicacion: equipo.ubicacion,
+        }),
+      });
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        throw new Error(datos.mensaje || "No se pudo desactivar el equipo.");
+      }
+
+      alert("Equipo desactivado correctamente.");
+
+      await obtenerEquipos();
+    } catch (error) {
+      console.error("Error al desactivar equipo:", error);
+
+      alert(error.message || "Ocurrió un error al desactivar el equipo.");
+    }
+  };
+  const activarEquipo = async (equipo) => {
+    const confirmar = window.confirm(
+      `¿Seguro que deseas activar el equipo "${equipo.nombre}"?`,
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      const respuesta = await fetch(`${API_URL}/equipos/${equipo.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nombre: equipo.nombre,
+          tipo: equipo.tipo,
+          marca: equipo.marca,
+          modelo: equipo.modelo,
+          numero_serie: equipo.numero_serie,
+          estado: "activo",
+          ubicacion: equipo.ubicacion,
+        }),
+      });
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        throw new Error(datos.mensaje || "No se pudo activar el equipo.");
+      }
+
+      alert("Equipo activado correctamente.");
+
+      await obtenerEquipos();
+    } catch (error) {
+      console.error("Error al activar equipo:", error);
+
+      alert(error.message || "Ocurrió un error al activar el equipo.");
+    }
   };
 
   const manejarCambioEquipo = (evento) => {
@@ -697,6 +782,19 @@ function App() {
                           onClick={() => editarEquipo(equipo)}
                         >
                           Editar
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          onClick={() =>
+                            equipo.estado === "activo"
+                              ? desactivarEquipo(equipo)
+                              : activarEquipo(equipo)
+                          }
+                        >
+                          {equipo.estado === "activo"
+                            ? "Desactivar"
+                            : "Activar"}
                         </button>
                       </td>
                     </tr>
@@ -1243,7 +1341,9 @@ function App() {
               <div>
                 <p className="eyebrow">GESTIÓN DE EQUIPOS</p>
 
-                <h2>Registrar nuevo equipo</h2>
+                <h2>
+                  {equipoEditando ? "Editar equipo" : "Registrar nuevo equipo"}
+                </h2>
 
                 <p>Ingresa la información del equipo.</p>
               </div>
@@ -1370,7 +1470,11 @@ function App() {
                   className="primary-button"
                   disabled={guardandoEquipo}
                 >
-                  {guardandoEquipo ? "Guardando..." : "Registrar equipo"}
+                  {guardandoEquipo
+                    ? "Guardando..."
+                    : equipoEditando
+                      ? "Guardar cambios"
+                      : "Registrar equipo"}
                 </button>
               </div>
             </form>
