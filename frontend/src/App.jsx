@@ -46,6 +46,7 @@ function App() {
   });
 
   const [guardandoSolicitud, setGuardandoSolicitud] = useState(false);
+  const [solicitudEditando, setSolicitudEditando] = useState(null);
 
   // =========================
   // MANTENIMIENTOS
@@ -382,6 +383,8 @@ function App() {
   // =========================
 
   const abrirFormularioSolicitud = () => {
+    setSolicitudEditando(null);
+
     setFormularioSolicitud({
       equipo_id: "",
       titulo: "",
@@ -397,6 +400,20 @@ function App() {
     if (!guardandoSolicitud) {
       setMostrarFormularioSolicitud(false);
     }
+  };
+
+  const editarSolicitud = (solicitud) => {
+    setSolicitudEditando(solicitud);
+
+    setFormularioSolicitud({
+      equipo_id: solicitud.equipo_id || "",
+      titulo: solicitud.titulo || "",
+      descripcion: solicitud.descripcion || "",
+      prioridad: solicitud.prioridad || "media",
+      estado: solicitud.estado || "pendiente",
+    });
+
+    setMostrarFormularioSolicitud(true);
   };
 
   const manejarCambioSolicitud = (evento) => {
@@ -434,8 +451,12 @@ function App() {
     try {
       setGuardandoSolicitud(true);
 
-      const respuesta = await fetch(`${API_URL}/solicitudes`, {
-        method: "POST",
+      const url = solicitudEditando
+        ? `${API_URL}/solicitudes/${solicitudEditando.id}`
+        : `${API_URL}/solicitudes`;
+
+      const respuesta = await fetch(url, {
+        method: solicitudEditando ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -887,6 +908,7 @@ function App() {
                     <th>Prioridad</th>
                     <th>Estado</th>
                     <th>Fecha</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
 
@@ -926,6 +948,15 @@ function App() {
                                 solicitud.fecha_solicitud,
                               ).toLocaleDateString("es-CO")
                             : "—"}
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() => editarSolicitud(solicitud)}
+                          >
+                            Editar
+                          </button>
                         </td>
                       </tr>
                     );
