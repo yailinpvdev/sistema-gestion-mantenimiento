@@ -294,6 +294,19 @@ button:disabled {
   background: #f4f6f9;
 }
 
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+ flex-wrap: nowrap;
+}
+
+.action-buttons .secondary-button {
+  width: 115px;
+  padding: 13px 10px;
+  white-space: nowrap;
+}
+
 .text-button {
   border: 0;
   background: transparent;

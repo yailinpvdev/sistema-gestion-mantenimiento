@@ -797,26 +797,28 @@ function App() {
 
                       <td>{equipo.ubicacion || "—"}</td>
                       <td>
-                        <button
-                          type="button"
-                          className="secondary-button"
-                          onClick={() => editarEquipo(equipo)}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          type="button"
-                          className="secondary-button"
-                          onClick={() =>
-                            equipo.estado === "activo"
-                              ? desactivarEquipo(equipo)
-                              : activarEquipo(equipo)
-                          }
-                        >
-                          {equipo.estado === "activo"
-                            ? "Desactivar"
-                            : "Activar"}
-                        </button>
+                        <div className="action-buttons">
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() => editarEquipo(equipo)}
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() =>
+                              equipo.estado === "activo"
+                                ? desactivarEquipo(equipo)
+                                : activarEquipo(equipo)
+                            }
+                          >
+                            {equipo.estado === "activo"
+                              ? "Desactivar"
+                              : "Activar"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
