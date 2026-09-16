@@ -11,6 +11,7 @@ function App() {
   // =========================
 
   const [equipos, setEquipos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
 
   const [mostrarFormularioEquipo, setMostrarFormularioEquipo] = useState(false);
 
@@ -88,6 +89,10 @@ function App() {
     }
   };
 
+  // ==============================
+  // OBTENER USUARIOS
+  // ==============================
+
   // =========================
   // OBTENER SOLICITUDES
   // =========================
@@ -144,14 +149,20 @@ function App() {
           respuestaEquipos,
           respuestaSolicitudes,
           respuestaMantenimientos,
+          respuestaUsuarios,
         ] = await Promise.all([
           fetch(`${API_URL}/equipos`),
           fetch(`${API_URL}/solicitudes`),
           fetch(`${API_URL}/mantenimientos`),
+          fetch(`${API_URL}/usuarios`),
         ]);
 
         if (!respuestaEquipos.ok) {
           throw new Error("No se pudieron obtener los equipos");
+        }
+
+        if (!respuestaUsuarios.ok) {
+          throw new Error("No se pudieron obtener los usuarios");
         }
 
         if (!respuestaSolicitudes.ok) {
@@ -162,17 +173,23 @@ function App() {
           throw new Error("No se pudieron obtener los mantenimientos");
         }
 
-        const [datosEquipos, datosSolicitudes, datosMantenimientos] =
-          await Promise.all([
-            respuestaEquipos.json(),
-            respuestaSolicitudes.json(),
-            respuestaMantenimientos.json(),
-          ]);
+        const [
+          datosEquipos,
+          datosSolicitudes,
+          datosMantenimientos,
+          datosUsuarios,
+        ] = await Promise.all([
+          respuestaEquipos.json(),
+          respuestaSolicitudes.json(),
+          respuestaMantenimientos.json(),
+          respuestaUsuarios.json(),
+        ]);
 
         if (componenteActivo) {
           setEquipos(datosEquipos);
           setSolicitudes(datosSolicitudes);
           setMantenimientos(datosMantenimientos);
+          setUsuarios(datosUsuarios);
         }
       } catch (error) {
         console.error("Error al cargar los datos iniciales:", error);
@@ -1270,9 +1287,20 @@ function App() {
 
               <h1>Técnicos</h1>
 
-              <p className="page-description">
-                Aquí gestionaremos los técnicos del sistema.
-              </p>
+              <div className="page-description">
+                {usuarios.filter((usuario) => usuario.rol === "tecnico")
+                  .length === 0 ? (
+                  <p>No hay técnicos registrados.</p>
+                ) : (
+                  <p>
+                    Técnicos registrados:{" "}
+                    {
+                      usuarios.filter((usuario) => usuario.rol === "tecnico")
+                        .length
+                    }
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         );

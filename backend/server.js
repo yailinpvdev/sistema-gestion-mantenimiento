@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { Pool } = require("pg");
+const usuariosRoutes = require("./routes/usuarios.routes");
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use("/api/usuarios", usuariosRoutes);
 
 // =========================
 // CONEXIÓN POSTGRESQL
