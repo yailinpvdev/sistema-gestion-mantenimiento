@@ -1292,13 +1292,29 @@ function App() {
                   .length === 0 ? (
                   <p>No hay técnicos registrados.</p>
                 ) : (
-                  <p>
-                    Técnicos registrados:{" "}
-                    {
-                      usuarios.filter((usuario) => usuario.rol === "tecnico")
-                        .length
-                    }
-                  </p>
+                  <div className="table-container">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Correo</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {usuarios
+                          .filter((usuario) => usuario.rol === "tecnico")
+                          .map((tecnico) => (
+                            <tr key={tecnico.id}>
+                              <td>{tecnico.nombre}</td>
+                              <td>{tecnico.correo}</td>
+                              <td>{tecnico.activo ? "Activo" : "Inactivo"}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
               </div>
             </div>
