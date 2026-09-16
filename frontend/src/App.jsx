@@ -1299,6 +1299,7 @@ function App() {
                           <th>Nombre</th>
                           <th>Correo</th>
                           <th>Estado</th>
+                          <th>Acciones</th>
                         </tr>
                       </thead>
 
@@ -1310,6 +1311,14 @@ function App() {
                               <td>{tecnico.nombre}</td>
                               <td>{tecnico.correo}</td>
                               <td>{tecnico.activo ? "Activo" : "Inactivo"}</td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className="secondary-button"
+                                >
+                                  Editar
+                                </button>
+                              </td>
                             </tr>
                           ))}
                       </tbody>
