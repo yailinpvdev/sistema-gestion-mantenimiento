@@ -496,7 +496,11 @@ function App() {
         throw new Error(datos.mensaje || "No se pudo crear la solicitud.");
       }
 
-      alert("Solicitud creada correctamente.");
+      alert(
+        solicitudEditando
+          ? "Solicitud actualizada correctamente."
+          : "Solicitud creada correctamente.",
+      );
 
       setMostrarFormularioSolicitud(false);
 
@@ -1586,9 +1590,15 @@ function App() {
               <div>
                 <p className="eyebrow">GESTIÓN DE SOLICITUDES</p>
 
-                <h2>Nueva solicitud</h2>
+                <h2>
+                  {solicitudEditando ? "Editar solicitud" : "Nueva solicitud"}
+                </h2>
 
-                <p>Registra una nueva solicitud de mantenimiento.</p>
+                <p>
+                  {solicitudEditando
+                    ? "Actualiza la información de la solicitud."
+                    : "Registra una nueva solicitud de mantenimiento."}
+                </p>
               </div>
 
               <button
@@ -1700,7 +1710,11 @@ function App() {
                   className="primary-button"
                   disabled={guardandoSolicitud}
                 >
-                  {guardandoSolicitud ? "Guardando..." : "Crear solicitud"}
+                  {guardandoSolicitud
+                    ? "Guardando..."
+                    : solicitudEditando
+                      ? "Guardar cambios"
+                      : "Crear solicitud"}
                 </button>
               </div>
             </form>

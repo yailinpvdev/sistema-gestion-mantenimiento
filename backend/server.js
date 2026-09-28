@@ -275,6 +275,66 @@ app.post("/api/solicitudes", async (req, res) => {
   }
 });
 
+// ACTUALIZAR SOLICITUD
+app.put("/api/solicitudes/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { equipo_id, usuario_id, titulo, descripcion, prioridad, estado } =
+      req.body;
+
+    console.log("PUT /api/solicitudes/" + id);
+    console.log("Datos recibidos:", req.body);
+
+    if (!equipo_id || !titulo || !descripcion) {
+      return res.status(400).json({
+        mensaje: "El equipo, título y descripción son obligatorios.",
+      });
+    }
+
+    const resultado = await pool.query(
+      `
+      UPDATE solicitudes
+      SET
+        equipo_id = $1,
+        usuario_id = $2,
+        titulo = $3,
+        descripcion = $4,
+        prioridad = $5,
+        estado = $6
+      WHERE id = $7
+      RETURNING *
+      `,
+      [
+        Number(equipo_id),
+        usuario_id || 1,
+        titulo,
+        descripcion,
+        prioridad || "media",
+        estado || "pendiente",
+        Number(id),
+      ],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        mensaje: "Solicitud no encontrada.",
+      });
+    }
+
+    console.log("Solicitud actualizada:", resultado.rows[0]);
+
+    res.json(resultado.rows[0]);
+  } catch (error) {
+    console.error("ERROR PUT /api/solicitudes/:id:", error);
+
+    res.status(500).json({
+      mensaje: "Error al actualizar la solicitud.",
+      error: error.message,
+    });
+  }
+});
+
 // ======================================================
 // MANTENIMIENTOS
 // ======================================================
