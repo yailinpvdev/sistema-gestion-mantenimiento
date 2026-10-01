@@ -637,7 +637,7 @@ function App() {
   // =========================
   // NAVEGACIÓN
   // =========================
-
+  const editarUsuario = () => {};
   const cambiarSeccion = (seccion) => {
     setActiveSection(seccion);
 
@@ -1319,6 +1319,7 @@ function App() {
                                 <button
                                   type="button"
                                   className="secondary-button"
+                                  onClick={() => editarUsuario(tecnico)}
                                 >
                                   Editar
                                 </button>
