@@ -637,7 +637,55 @@ function App() {
   // =========================
   // NAVEGACIÓN
   // =========================
-  const editarUsuario = () => {};
+  const editarUsuario = async (usuario) => {
+    const nuevoNombre = window.prompt("Nombre del técnico:", usuario.nombre);
+
+    if (nuevoNombre === null || !nuevoNombre.trim()) {
+      return;
+    }
+
+    const nuevoCorreo = window.prompt("Correo del técnico:", usuario.correo);
+
+    if (nuevoCorreo === null || !nuevoCorreo.trim()) {
+      return;
+    }
+
+    const nuevoEstado = window.confirm(
+      "¿El técnico debe estar activo?\n\nAceptar = Activo\nCancelar = Inactivo",
+    );
+
+    try {
+      const respuesta = await fetch(`${API_URL}/usuarios/${usuario.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nombre: nuevoNombre.trim(),
+          correo: nuevoCorreo.trim(),
+          rol: usuario.rol,
+          activo: nuevoEstado,
+        }),
+      });
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        throw new Error(datos.mensaje || "No se pudo actualizar el técnico.");
+      }
+
+      setUsuarios((usuariosActuales) =>
+        usuariosActuales.map((usuarioActual) =>
+          usuarioActual.id === usuario.id ? datos : usuarioActual,
+        ),
+      );
+
+      alert("Técnico actualizado correctamente.");
+    } catch (error) {
+      console.error("Error al actualizar técnico:", error);
+      alert(error.message || "Ocurrió un error al actualizar el técnico.");
+    }
+  };
   const cambiarSeccion = (seccion) => {
     setActiveSection(seccion);
 
