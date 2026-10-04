@@ -1237,15 +1237,44 @@ function App() {
               </button>
             </div>
 
-            <div className="empty-state">
-              <div className="empty-icon">🔧</div>
+            {mantenimientos.filter(
+              (mantenimiento) => mantenimiento.estado === "programado",
+            ).length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">🔧</div>
 
-              <h3>No hay mantenimientos programados</h3>
+                <h3>No hay mantenimientos programados</h3>
 
-              <p>
-                Cuando registres actividades de mantenimiento, aparecerán aquí.
-              </p>
-            </div>
+                <p>
+                  Cuando registres actividades de mantenimiento, aparecerán
+                  aquí.
+                </p>
+              </div>
+            ) : (
+              <div className="recent-list">
+                {mantenimientos
+                  .filter(
+                    (mantenimiento) => mantenimiento.estado === "programado",
+                  )
+                  .slice(0, 5)
+                  .map((mantenimiento) => (
+                    <div className="recent-item" key={mantenimiento.id}>
+                      <div>
+                        <strong>
+                          {mantenimiento.equipo_nombre || "Equipo"}
+                        </strong>
+                        <span>{mantenimiento.descripcion}</span>
+                      </div>
+
+                      <span>
+                        {new Date(
+                          mantenimiento.fecha_mantenimiento,
+                        ).toLocaleDateString()}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            )}
           </article>
 
           <article className="panel">
