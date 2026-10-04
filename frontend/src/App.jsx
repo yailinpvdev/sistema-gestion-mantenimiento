@@ -556,7 +556,9 @@ function App() {
       equipo_id: mantenimiento.equipo_id || "",
       tecnico_id: mantenimiento.tecnico_id || "",
       tipo: mantenimiento.tipo || "preventivo",
-      fecha_mantenimiento: mantenimiento.fecha_mantenimiento || "",
+      fecha_mantenimiento: mantenimiento.fecha_mantenimiento
+        ? mantenimiento.fecha_mantenimiento.split("T")[0]
+        : "",
       descripcion: mantenimiento.descripcion || "",
       estado: mantenimiento.estado || "programado",
     });
@@ -738,7 +740,9 @@ function App() {
     },
     {
       title: "Técnicos activos",
-      value: "0",
+      value: usuarios.filter(
+        (usuario) => usuario.rol === "tecnico" && usuario.activo,
+      ).length,
       description: "Personal registrado",
       icon: "👤",
     },
