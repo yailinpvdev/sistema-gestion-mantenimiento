@@ -4,7 +4,9 @@ import "./App.css";
 const API_URL = "http://localhost:3000/api";
 
 function App() {
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSection] = useState(
+    localStorage.getItem("activeSection") || "dashboard",
+  );
 
   // =========================
   // EQUIPOS
@@ -661,7 +663,7 @@ function App() {
   };
   const cambiarSeccion = (seccion) => {
     setActiveSection(seccion);
-
+    localStorage.setItem("activeSection", seccion);
     setMostrarFormularioEquipo(false);
     setMostrarFormularioSolicitud(false);
     setMostrarFormularioMantenimiento(false);
