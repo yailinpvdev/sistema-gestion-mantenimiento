@@ -559,12 +559,15 @@ tbody tr:hover {
 }
 
 .modal {
-  width: min(760px, 100%);
+ width: min(520px, 100%);
   max-height: calc(100vh - 60px);
   overflow-y: auto;
   background: white;
   border-radius: 20px;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+}
+.modal > form {
+  padding: 0 30px 30px;
 }
 
 .modal-header {
@@ -835,4 +838,21 @@ tbody tr:hover {
   .form-actions button {
     width: 100%;
   }
+}
+
+.btn-add {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-add:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
 }

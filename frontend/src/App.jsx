@@ -12,6 +12,16 @@ function App() {
 
   const [equipos, setEquipos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [usuarioEditando, setUsuarioEditando] = useState(null);
+  const [mostrarFormularioUsuario, setMostrarFormularioUsuario] =
+    useState(false);
+
+  const [formularioUsuario, setFormularioUsuario] = useState({
+    nombre: "",
+    correo: "",
+    rol: "tecnico",
+    activo: true,
+  });
 
   const [mostrarFormularioEquipo, setMostrarFormularioEquipo] = useState(false);
 
@@ -637,54 +647,17 @@ function App() {
   // =========================
   // NAVEGACIÓN
   // =========================
-  const editarUsuario = async (usuario) => {
-    const nuevoNombre = window.prompt("Nombre del técnico:", usuario.nombre);
+  const editarUsuario = (usuario) => {
+    setUsuarioEditando(usuario);
 
-    if (nuevoNombre === null || !nuevoNombre.trim()) {
-      return;
-    }
+    setFormularioUsuario({
+      nombre: usuario.nombre,
+      correo: usuario.correo,
+      rol: usuario.rol,
+      activo: usuario.activo,
+    });
 
-    const nuevoCorreo = window.prompt("Correo del técnico:", usuario.correo);
-
-    if (nuevoCorreo === null || !nuevoCorreo.trim()) {
-      return;
-    }
-
-    const nuevoEstado = window.confirm(
-      "¿El técnico debe estar activo?\n\nAceptar = Activo\nCancelar = Inactivo",
-    );
-
-    try {
-      const respuesta = await fetch(`${API_URL}/usuarios/${usuario.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nombre: nuevoNombre.trim(),
-          correo: nuevoCorreo.trim(),
-          rol: usuario.rol,
-          activo: nuevoEstado,
-        }),
-      });
-
-      const datos = await respuesta.json();
-
-      if (!respuesta.ok) {
-        throw new Error(datos.mensaje || "No se pudo actualizar el técnico.");
-      }
-
-      setUsuarios((usuariosActuales) =>
-        usuariosActuales.map((usuarioActual) =>
-          usuarioActual.id === usuario.id ? datos : usuarioActual,
-        ),
-      );
-
-      alert("Técnico actualizado correctamente.");
-    } catch (error) {
-      console.error("Error al actualizar técnico:", error);
-      alert(error.message || "Ocurrió un error al actualizar el técnico.");
-    }
+    setMostrarFormularioUsuario(true);
   };
   const cambiarSeccion = (seccion) => {
     setActiveSection(seccion);
@@ -1334,6 +1307,22 @@ function App() {
       case "technicians":
         return (
           <div className="page-header">
+            <button
+              className="btn-add"
+              onClick={() => {
+                setUsuarioEditando(null);
+                setFormularioUsuario({
+                  nombre: "",
+                  correo: "",
+                  password: "",
+                  rol: "tecnico",
+                  activo: true,
+                });
+                setMostrarFormularioUsuario(true);
+              }}
+            >
+              + Añadir técnico
+            </button>
             <div>
               <p className="eyebrow">GESTIÓN DE PERSONAL</p>
 
@@ -1461,6 +1450,174 @@ function App() {
 
         <section className="content">{renderContenido()}</section>
       </main>
+      {/* =========================
+    MODAL EDITAR TÉCNICO
+========================= */}
+      {mostrarFormularioUsuario && (
+        <div
+          className="modal-overlay"
+          onMouseDown={(evento) => {
+            if (evento.target === evento.currentTarget) {
+              setMostrarFormularioUsuario(false);
+            }
+          }}
+        >
+          <div className="modal">
+            <div className="modal-header">
+              <div>
+                <p className="eyebrow">GESTIÓN DE TÉCNICOS</p>
+
+                <h2>Editar técnico</h2>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setMostrarFormularioUsuario(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <form
+              onSubmit={async (evento) => {
+                evento.preventDefault();
+
+                try {
+                  const esEdicion = usuarioEditando !== null;
+
+                  const respuesta = await fetch(
+                    esEdicion
+                      ? `${API_URL}/usuarios/${usuarioEditando.id}`
+                      : `${API_URL}/usuarios`,
+                    {
+                      method: esEdicion ? "PUT" : "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify(formularioUsuario),
+                    },
+                  );
+
+                  const datos = await respuesta.json();
+
+                  if (!respuesta.ok) {
+                    throw new Error(
+                      datos.mensaje ||
+                        (esEdicion
+                          ? "No se pudo actualizar el técnico."
+                          : "No se pudo crear el técnico."),
+                    );
+                  }
+
+                  if (esEdicion) {
+                    setUsuarios((usuariosActuales) =>
+                      usuariosActuales.map((usuarioActual) =>
+                        usuarioActual.id === usuarioEditando.id
+                          ? datos
+                          : usuarioActual,
+                      ),
+                    );
+
+                    alert("Técnico actualizado correctamente.");
+                  } else {
+                    setUsuarios((usuariosActuales) => [
+                      ...usuariosActuales,
+                      datos,
+                    ]);
+
+                    alert("Técnico creado correctamente.");
+                  }
+
+                  setMostrarFormularioUsuario(false);
+                  setUsuarioEditando(null);
+                } catch (error) {
+                  console.error("Error al guardar técnico:", error);
+
+                  alert(
+                    error.message || "Ocurrió un error al guardar el técnico.",
+                  );
+                }
+              }}
+            >
+              <div className="form-group">
+                <label>Nombre</label>
+                <input
+                  type="text"
+                  value={formularioUsuario.nombre}
+                  onChange={(evento) =>
+                    setFormularioUsuario({
+                      ...formularioUsuario,
+                      nombre: evento.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Correo</label>
+                <input
+                  type="email"
+                  value={formularioUsuario.correo}
+                  onChange={(evento) =>
+                    setFormularioUsuario({
+                      ...formularioUsuario,
+                      correo: evento.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Rol</label>
+                <select
+                  value={formularioUsuario.rol}
+                  onChange={(evento) =>
+                    setFormularioUsuario({
+                      ...formularioUsuario,
+                      rol: evento.target.value,
+                    })
+                  }
+                >
+                  <option value="tecnico">Técnico</option>
+                  <option value="usuario">Usuario</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Estado</label>
+                <select
+                  value={formularioUsuario.activo ? "activo" : "inactivo"}
+                  onChange={(evento) =>
+                    setFormularioUsuario({
+                      ...formularioUsuario,
+                      activo: evento.target.value === "activo",
+                    })
+                  }
+                >
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                </select>
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => setMostrarFormularioUsuario(false)}
+                >
+                  Cancelar
+                </button>
+
+                <button type="submit" className="primary-button">
+                  Guardar cambios
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* =========================
           MODAL NUEVO EQUIPO
