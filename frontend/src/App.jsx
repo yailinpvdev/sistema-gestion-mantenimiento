@@ -1614,18 +1614,8 @@ function App() {
 
               <div className="form-group">
                 <label>Rol</label>
-                <select
-                  value={formularioUsuario.rol}
-                  onChange={(evento) =>
-                    setFormularioUsuario({
-                      ...formularioUsuario,
-                      rol: evento.target.value,
-                    })
-                  }
-                >
+                <select value="tecnico" disabled>
                   <option value="tecnico">Técnico</option>
-                  <option value="usuario">Usuario</option>
-                  <option value="admin">Administrador</option>
                 </select>
               </div>
 
