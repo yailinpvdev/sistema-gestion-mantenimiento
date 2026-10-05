@@ -1614,9 +1614,7 @@ function App() {
 
               <div className="form-group">
                 <label>Rol</label>
-                <select value="tecnico" disabled>
-                  <option value="tecnico">Técnico</option>
-                </select>
+                <div className="form-control-static">Técnico</div>
               </div>
 
               <div className="form-group">

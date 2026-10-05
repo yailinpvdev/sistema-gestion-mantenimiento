@@ -856,3 +856,48 @@ tbody tr:hover {
   background-color: #1d4ed8;
   transform: translateY(-1px);
 }
+
+/* Ajuste visual del formulario de técnicos */
+.modal form .form-group {
+  margin-bottom: 22px;
+}
+
+.modal form .form-group label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.modal form input,
+.modal form select {
+  width: 100%;
+  min-height: 52px;
+  box-sizing: border-box;
+}
+
+.modal form .modal-actions {
+  margin-top: 28px;
+  padding-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal form .form-group select:disabled {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: none;
+  cursor: default;
+  color: #25324a;
+  opacity: 1;
+}
+/* Espacio después de la línea divisoria del modal */
+.modal form {
+  padding-top: 12px;
+}
+
+/* Títulos de los campos */
+.modal form .form-group label {
+  font-size: 17px;
+  font-weight: 700;
+  color: #25324a;
+}
