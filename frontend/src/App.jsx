@@ -1939,6 +1939,10 @@ function App() {
                     <option value="pendiente">Pendiente</option>
 
                     <option value="abierta">Abierta</option>
+
+                    <option value="completada">Completada</option>
+
+                    <option value="cancelada">Cancelada</option>
                   </select>
                 </div>
 
