@@ -226,8 +226,15 @@ app.get("/api/solicitudes", async (req, res) => {
 // CREAR SOLICITUD
 app.post("/api/solicitudes", async (req, res) => {
   try {
-    const { equipo_id, usuario_id, titulo, descripcion, prioridad, estado } =
-      req.body;
+    const {
+      equipo_id,
+      usuario_id,
+      tecnico_id,
+      titulo,
+      descripcion,
+      prioridad,
+      estado,
+    } = req.body;
 
     console.log("POST /api/solicitudes");
     console.log("Datos recibidos:", req.body);
@@ -244,17 +251,19 @@ app.post("/api/solicitudes", async (req, res) => {
         (
           equipo_id,
           usuario_id,
+          tecnico_id,
           titulo,
           descripcion,
           prioridad,
           estado
         )
-      VALUES ($1, $2, $3, $4, $5, $6)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
       `,
       [
         Number(equipo_id),
         usuario_id || 1,
+        tecnico_id || null,
         titulo,
         descripcion,
         prioridad || "media",
@@ -280,8 +289,15 @@ app.put("/api/solicitudes/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { equipo_id, usuario_id, titulo, descripcion, prioridad, estado } =
-      req.body;
+    const {
+      equipo_id,
+      usuario_id,
+      tecnico_id,
+      titulo,
+      descripcion,
+      prioridad,
+      estado,
+    } = req.body;
 
     console.log("PUT /api/solicitudes/" + id);
     console.log("Datos recibidos:", req.body);
@@ -296,18 +312,20 @@ app.put("/api/solicitudes/:id", async (req, res) => {
       `
       UPDATE solicitudes
       SET
-        equipo_id = $1,
-        usuario_id = $2,
-        titulo = $3,
-        descripcion = $4,
-        prioridad = $5,
-        estado = $6
-      WHERE id = $7
+       equipo_id = $1,
+usuario_id = $2,
+tecnico_id = $3,
+titulo = $4,
+descripcion = $5,
+prioridad = $6,
+estado = $7
+     WHERE id = $8
       RETURNING *
       `,
       [
         Number(equipo_id),
         usuario_id || 1,
+        tecnico_id || null,
         titulo,
         descripcion,
         prioridad || "media",

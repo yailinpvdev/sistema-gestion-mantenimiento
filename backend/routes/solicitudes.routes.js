@@ -53,8 +53,8 @@ router.get("/:id", async (req, res) => {
 // Crear una solicitud
 router.post("/", async (req, res) => {
   try {
-    const { equipo_id, titulo, descripcion, prioridad, estado } = req.body;
-
+    const { equipo_id, tecnico_id, titulo, descripcion, prioridad, estado } =
+      req.body;
     // Validar que se haya seleccionado un equipo
     if (!equipo_id) {
       return res.status(400).json({
@@ -71,12 +71,13 @@ router.post("/", async (req, res) => {
 
     const resultado = await pool.query(
       `INSERT INTO solicitudes
-       (equipo_id, titulo, descripcion, prioridad, estado)
-       VALUES ($1, $2, $3, $4, $5)
+       (equipo_id, tecnico_id, titulo, descripcion, prioridad, estado)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id, equipo_id, usuario_id, titulo, descripcion,
                  prioridad, estado, fecha_solicitud, fecha_cierre`,
       [
         equipo_id,
+        tecnico_id,
         titulo || "Solicitud de mantenimiento",
         descripcion.trim(),
         prioridad || "media",
@@ -100,21 +101,38 @@ router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { equipo_id, usuario_id, titulo, descripcion, prioridad, estado } =
-      req.body;
+    const {
+      equipo_id,
+      tecnico_id,
+      usuario_id,
+      titulo,
+      descripcion,
+      prioridad,
+      estado,
+    } = req.body;
 
     const resultado = await pool.query(
       `UPDATE solicitudes
        SET equipo_id = $1,
-           usuario_id = $2,
-           titulo = $3,
-           descripcion = $4,
-           prioridad = $5,
-           estado = $6
-       WHERE id = $7
+    tecnico_id = $2,
+    usuario_id = $3,
+           titulo = $4,
+descripcion = $5,
+prioridad = $6,
+estado = $7
+WHERE id = $8
        RETURNING id, equipo_id, usuario_id, titulo, descripcion,
                  prioridad, estado, fecha_solicitud, fecha_cierre`,
-      [equipo_id, usuario_id, titulo, descripcion, prioridad, estado, id],
+      [
+        equipo_id,
+        tecnico_id,
+        usuario_id,
+        titulo,
+        descripcion,
+        prioridad,
+        estado,
+        id,
+      ],
     );
 
     if (resultado.rows.length === 0) {

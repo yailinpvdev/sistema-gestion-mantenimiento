@@ -52,6 +52,7 @@ function App() {
 
   const [formularioSolicitud, setFormularioSolicitud] = useState({
     equipo_id: "",
+    tecnico_id: "",
     titulo: "",
     descripcion: "",
     prioridad: "media",
@@ -436,6 +437,7 @@ function App() {
 
     setFormularioSolicitud({
       equipo_id: solicitud.equipo_id || "",
+      tecnico_id: solicitud.tecnico_id || "",
       titulo: solicitud.titulo || "",
       descripcion: solicitud.descripcion || "",
       prioridad: solicitud.prioridad || "media",
@@ -491,7 +493,7 @@ function App() {
         },
         body: JSON.stringify({
           equipo_id: Number(formularioSolicitud.equipo_id),
-
+          tecnico_id: Number(formularioSolicitud.tecnico_id),
           // Usuario administrador actual
           usuario_id: 1,
 
@@ -955,6 +957,7 @@ function App() {
                   <tr>
                     <th>Título</th>
                     <th>Equipo</th>
+                    <th>Técnico</th>
                     <th>Prioridad</th>
                     <th>Estado</th>
                     <th>Fecha</th>
@@ -979,7 +982,13 @@ function App() {
                             ? equipo.nombre
                             : `Equipo #${solicitud.equipo_id}`}
                         </td>
-
+                        <td>
+                          {usuarios.find(
+                            (usuario) =>
+                              Number(usuario.id) ===
+                              Number(solicitud.tecnico_id),
+                          )?.nombre || "Sin asignar"}
+                        </td>
                         <td>
                           <span className="priority-badge">
                             {solicitud.prioridad}
@@ -1870,6 +1879,30 @@ function App() {
                         {equipo.nombre} — {equipo.tipo}
                       </option>
                     ))}
+                  </select>
+                </div>
+                <div className="form-group form-group-full">
+                  <label htmlFor="tecnico_id">Técnico *</label>
+
+                  <select
+                    id="tecnico_id"
+                    name="tecnico_id"
+                    value={formularioSolicitud.tecnico_id}
+                    onChange={manejarCambioSolicitud}
+                    required
+                  >
+                    <option value="">Selecciona un técnico</option>
+
+                    {usuarios
+                      .filter(
+                        (usuario) =>
+                          usuario.rol === "tecnico" && usuario.activo,
+                      )
+                      .map((usuario) => (
+                        <option key={usuario.id} value={usuario.id}>
+                          {usuario.nombre}
+                        </option>
+                      ))}
                   </select>
                 </div>
 
