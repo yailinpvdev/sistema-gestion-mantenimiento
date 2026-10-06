@@ -2042,20 +2042,27 @@ function App() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="mantenimiento_tecnico_id">
-                    ID del técnico *
-                  </label>
+                  <label htmlFor="mantenimiento_tecnico_id">Técnico *</label>
 
-                  <input
+                  <select
                     id="mantenimiento_tecnico_id"
                     name="tecnico_id"
-                    type="number"
-                    min="1"
                     value={formularioMantenimiento.tecnico_id}
                     onChange={manejarCambioMantenimiento}
-                    placeholder="Ej. 1"
                     required
-                  />
+                  >
+                    <option value="">Selecciona un técnico</option>
+                    {usuarios
+                      .filter(
+                        (usuario) =>
+                          usuario.rol === "tecnico" && usuario.activo,
+                      )
+                      .map((usuario) => (
+                        <option key={usuario.id} value={usuario.id}>
+                          {usuario.nombre}
+                        </option>
+                      ))}
+                  </select>
                 </div>
 
                 <div className="form-group">
